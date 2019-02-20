@@ -13,3 +13,9 @@
 
 docker/cpp/testcases
 docker/cpp/code.cpp
+
+# Data and temp directories
+testcases/
+temp/
+test.go
+temp.go
