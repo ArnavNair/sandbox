@@ -18,3 +18,7 @@ This repository contains images for running codes in different languages against
 ## Build and run the containers
 
 There are separate configurations for each supported language in the `docker` directory. The instructions present in the respective README can be followed to build and run the containers.
+
+
+## References
+* [Time Limit Constraints per language](https://blog.codechef.com/2009/04/01/announcing-time-limits-based-on-programming-language/)
