@@ -2,15 +2,12 @@ package main
 
 import (
 	"fmt"
-	"io"
-	"os"
 
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/api/types/mount"
 	"github.com/docker/docker/client"
 	"golang.org/x/net/context"
-
 )
 
 const defaultDockerAPIVersion = "v1.39"
@@ -20,13 +17,13 @@ const defaultDockerAPIVersion = "v1.39"
 // 	// codePath := "code.py"
 // 	questionID := "1"
 // 	submissionID := "1"
-// 	testcasesPath := "/media/pvgupta24/MyZone/Projects/go/src/github.com/cpjudge/sandbox/testcases/" + questionID
-// 	submissionPath := "/media/pvgupta24/MyZone/Projects/go/src/github.com/cpjudge/sandbox/temp/" + submissionID
+// 	testcasesPath := "/media/pvgupta24/MyZone/Projects/go/src/github.com/cpjudge/testcases/" + questionID
+// 	submissionPath := "/media/pvgupta24/MyZone/Projects/go/src/github.com/cpjudge/submissions/" + submissionID
 
 // 	go run(testcasesPath, submissionPath, language, submissionID)
 // }
 
-func RunSandbox(testcasesPath string, submissionPath string, language string, containerName string) {
+func RunSandbox(testcasesPath string, submissionPath string, language string, containerName string) int64 {
 
 	ctx := context.Background()
 	cli, err := client.NewClientWithOpts(client.WithVersion(defaultDockerAPIVersion))
@@ -53,7 +50,7 @@ func RunSandbox(testcasesPath string, submissionPath string, language string, co
 			},
 		},
 	}, nil, "cpjudge_"+containerName)
-	fmt.Println(resp.ID)
+	// fmt.Println(resp.ID)
 
 	if err != nil {
 		panic(err)
@@ -70,15 +67,23 @@ func RunSandbox(testcasesPath string, submissionPath string, language string, co
 		if err != nil {
 			panic(err)
 		}
-	case <-statusCh:
+	case status := <-statusCh:
+		cli.ContainerRemove(ctx, resp.ID, types.ContainerRemoveOptions{})
+		fmt.Printf("Status Code %d", status.StatusCode)
+		return status.StatusCode
 	}
+	cli.ContainerRemove(ctx, resp.ID, types.ContainerRemoveOptions{})
 
-	out, err := cli.ContainerLogs(ctx, resp.ID, types.ContainerLogsOptions{ShowStdout: true})
-	if err != nil {
-		panic(err)
-	}
+	// out, err := cli.ContainerLogs(ctx, resp.ID, types.ContainerLogsOptions{ShowStdout: true})
+	// out, err := cli.ContainerLogs(ctx, resp.ID, types.ContainerLogsOptions{ShowStdout: true})
+	// if err != nil {
+	// 	panic(err)
+	// }
 
-	io.Copy(os.Stdout, out)
+	// io.Copy(os.Stdout, out)
+
+	//TODO: return status code
+	return 0
 }
 
 // func createDirIfNotExist(dir string) {

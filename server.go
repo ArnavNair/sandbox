@@ -25,7 +25,8 @@ type sandboxServer struct{}
 
 func (s *sandboxServer) SubmitCode(ctx context.Context, submission *pb.Submission) (*pb.CodeStatus, error) {
 
-	submissionCode := RunSandbox(submission.GetTestcasesPath(),
+	submissionCode := RunSandbox(
+		submission.GetTestcasesPath(),
 		submission.GetSubmissionPath(),
 		submission.GetLanguage(),
 		submission.GetSubmissionId())
@@ -35,6 +36,8 @@ func (s *sandboxServer) SubmitCode(ctx context.Context, submission *pb.Submissio
 		codeStatus.CodeStatus = pb.SubmissionStatus_COMPILATION_ERROR
 	case 146:
 		codeStatus.CodeStatus = pb.SubmissionStatus_TIME_LIMIT_EXCEEDED
+	default:
+		codeStatus.CodeStatus = pb.SubmissionStatus_TO_BE_EVALUATED
 	}
 
 	return codeStatus, nil

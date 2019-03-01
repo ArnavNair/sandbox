@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -e
+# set -e
 
 submission_directory="/sandbox/submission"
 testcases_directory="/sandbox/testcases"
@@ -19,11 +19,10 @@ fi
 timelimit=${timelimit:-1}
 
 for testcase in $(ls $testcases_directory); do
-    filename="${testcase%.*}"
-    timeout -k 9 $timelimit ./executable 0<"$testcases_directory/$testcase" \\
-        1>"$submission_directory/output/$filename.out" \\
-        2>"$submission_directory/error/$filename.err"
-    if [[ $? -eq 124 ]]; then
+    timeout -s 9 -t $timelimit ./executable 0<"$testcases_directory/$testcase" \
+        1>"$submission_directory/output/$testcase" \
+        2>"$submission_directory/error/$testcase"
+    if [[ $? -eq 137 ]]; then
         exit 146
     fi
 done
