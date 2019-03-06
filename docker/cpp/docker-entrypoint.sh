@@ -20,7 +20,7 @@ fi
 timelimit=${timelimit:-1}
 
 for testcase in $(ls $testcases_directory); do
-    timeout -s 9 -t $timelimit ./executable 0<"$testcases_directory/$testcase" \
+    timeout -s 9 -t $timelimit sh -c './executable' 0<"$testcases_directory/$testcase" \
         1>"$submission_directory/output/$testcase" \
         2>"$submission_directory/error/$testcase"
     if [[ $? -eq 137 ]]; then
