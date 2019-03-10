@@ -25,8 +25,9 @@ func RunSandbox(testcasesPath string, submissionPath string, language string, co
 	}
 	resp, err := cli.ContainerCreate(ctx,
 		&container.Config{
-			Image: "cpjudge/" + language,
-			Tty:   true,
+			Image:           "cpjudge/" + language,
+			Tty:             true,
+			NetworkDisabled: true,
 		},
 		&container.HostConfig{
 			Mounts: []mount.Mount{
