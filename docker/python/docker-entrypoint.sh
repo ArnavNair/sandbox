@@ -8,9 +8,10 @@ cd $submission_directory
 mv code code.py
 
 # TODO: Restrict container network access
+timelimit=${timelimit:-1}
 
 for testcase in $(ls $testcases_directory); do
-    python3 code.py 0<"$testcases_directory/$testcase" \
+    timeout -s 9 -t $timelimit python3 code.py 0<"$testcases_directory/$testcase" \
         1>"$submission_directory/output/$testcase" \
         2>"$submission_directory/error/$testcase"
 done
