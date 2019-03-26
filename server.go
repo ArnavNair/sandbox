@@ -3,11 +3,11 @@ package main
 import (
 	"context"
 	"flag"
-	"fmt"
 	"log"
 	"net"
 
 	pb "github.com/cpjudge/proto/submission"
+
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 	"google.golang.org/grpc/testdata"
@@ -18,7 +18,7 @@ var (
 	certFile   = flag.String("cert_file", "", "The TLS cert file")
 	keyFile    = flag.String("key_file", "", "The TLS key file")
 	jsonDBFile = flag.String("json_db_file", "", "A json file containing a list of features")
-	port       = flag.Int("port", 10000, "The server port")
+	serverAddr = flag.String("server_addr", "172.17.0.1:10000", "The server address in the format of host:port")
 )
 
 type sandboxServer struct{}
@@ -45,7 +45,7 @@ func (s *sandboxServer) SubmitCode(ctx context.Context, submission *pb.Submissio
 
 func main() {
 	flag.Parse()
-	lis, err := net.Listen("tcp", fmt.Sprintf("localhost:%d", *port))
+	lis, err := net.Listen("tcp", *serverAddr)
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}

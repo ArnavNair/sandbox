@@ -10,19 +10,12 @@ import (
 	"golang.org/x/net/context"
 )
 
-const defaultDockerAPIVersion = "v1.39"
+const defaultDockerAPIVersion = "v1.38"
 
-// func main() {
-// 	language := "cpp"
-// 	// codePath := "code.py"
-// 	questionID := "1"
-// 	submissionID := "1"
-// 	testcasesPath := "/media/pvgupta24/MyZone/Projects/go/src/github.com/cpjudge/testcases/" + questionID
-// 	submissionPath := "/media/pvgupta24/MyZone/Projects/go/src/github.com/cpjudge/submissions/" + submissionID
-
-// 	go run(testcasesPath, submissionPath, language, submissionID)
-// }
-
+/*
+RunSandbox : Spawns a sandbox container for the language, mounts testcasesPath
+and submissionPath.
+*/
 func RunSandbox(testcasesPath string, submissionPath string, language string, containerName string) int64 {
 
 	ctx := context.Background()
@@ -30,27 +23,26 @@ func RunSandbox(testcasesPath string, submissionPath string, language string, co
 	if err != nil {
 		panic(err)
 	}
-
-	// createDirIfNotExist(submissionPath)
-
-	resp, err := cli.ContainerCreate(ctx, &container.Config{
-		Image: "cpjudge/" + language,
-		Tty:   true,
-	}, &container.HostConfig{
-		Mounts: []mount.Mount{
-			{
-				Type:   mount.TypeBind,
-				Source: testcasesPath,
-				Target: "/sandbox/testcases",
-			},
-			{
-				Type:   mount.TypeBind,
-				Source: submissionPath,
-				Target: "/sandbox/submission",
-			},
+	resp, err := cli.ContainerCreate(ctx,
+		&container.Config{
+			Image:           "cpjudge/" + language,
+			Tty:             true,
+			NetworkDisabled: true,
 		},
-	}, nil, "cpjudge_"+containerName)
-	// fmt.Println(resp.ID)
+		&container.HostConfig{
+			Mounts: []mount.Mount{
+				{
+					Type:   mount.TypeBind,
+					Source: testcasesPath,
+					Target: "/sandbox/testcases",
+				},
+				{
+					Type:   mount.TypeBind,
+					Source: submissionPath,
+					Target: "/sandbox/submission",
+				},
+			},
+		}, nil, "cpjudge_"+containerName)
 
 	if err != nil {
 		panic(err)
@@ -85,12 +77,3 @@ func RunSandbox(testcasesPath string, submissionPath string, language string, co
 	//TODO: return status code
 	return 0
 }
-
-// func createDirIfNotExist(dir string) {
-// 	if _, err := os.Stat(dir); os.IsNotExist(err) {
-// 		err = os.MkdirAll(dir, 0755)
-// 		if err != nil {
-// 			panic(err)
-// 		}
-// 	}
-// }
